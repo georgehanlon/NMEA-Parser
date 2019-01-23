@@ -378,11 +378,11 @@ BOOST_AUTO_TEST_CASE( Log_GGA_RMC )
     BOOST_CHECK_CLOSE( route[501].longitude() , -ddmTodd("00559.2403") , percentageAccuracy );
 }
 
-BOOST_AUTO_TEST_CASE( CorruptLog_GGA_RMC )
+BOOST_AUTO_TEST_CASE( AnnotatedLog_GGA_RMC )
 {
-    std::vector<Position> route = routeFromNMEALog(LogFiles::NMEALogsDir + "gga_rmc-corrupt.log");
+    std::vector<Position> route = routeFromNMEALog(LogFiles::NMEALogsDir + "gga_rmc-annotated.log");
 
-    BOOST_CHECK_EQUAL( route.size() , 1810 ); // 16 corrupt lines should be discarded
+    BOOST_CHECK_EQUAL( route.size() , 1826 ); // The header and blank line should be discarded
 
     // $GPGGA,091138.000,5320.4819,N,00136.3714,W,1,0,,395.0,M,,M,,*46
     BOOST_CHECK_CLOSE( route[0].latitude() , ddmTodd("5320.4819") , percentageAccuracy );
@@ -390,8 +390,8 @@ BOOST_AUTO_TEST_CASE( CorruptLog_GGA_RMC )
     BOOST_CHECK_CLOSE( route[0].elevation() , 395 , percentageAccuracy );
 
     // $GPRMC,133549.000,A,5320.9122,N,00138.1426,W,0.000,0.00,120812,,A*66
-    BOOST_CHECK_CLOSE( route[1501].latitude() , ddmTodd("5320.9122") , percentageAccuracy );
-    BOOST_CHECK_CLOSE( route[1501].longitude() , -ddmTodd("00138.1426") , percentageAccuracy );
+    BOOST_CHECK_CLOSE( route[1517].latitude() , ddmTodd("5320.9122") , percentageAccuracy );
+    BOOST_CHECK_CLOSE( route[1517].longitude() , -ddmTodd("00138.1426") , percentageAccuracy );
 
 }
 
