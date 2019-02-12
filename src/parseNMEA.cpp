@@ -4,8 +4,23 @@
 #include "position.h"
 #include "types.h"
 
-bool GPS::isValidSentence(const std::string &) 
+bool GPS::isValidSentence(const std::string &s)
 {
+    if (s.substr(0,3) == "$GP")
+    {
+        std::string type = s.substr(3,3);
+        if (type == "GLL" || type == "GGA" || type == "RMC")
+        {
+            int endPos = s.size()-3;
+            if (s[endPos] == '*')
+            {
+                std::string checksumChars = s.substr(1, endPos-1);
+            }
+        }
+
+
+    }
+
     return false;
 }
 
