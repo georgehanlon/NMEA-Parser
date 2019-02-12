@@ -993,7 +993,9 @@ nmea-tests.o: src/nmea-tests.cpp headers/logs.h \
 		headers/types.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o nmea-tests.o src/nmea-tests.cpp
 
-parseNMEA.o: src/parseNMEA.cpp 
+parseNMEA.o: src/parseNMEA.cpp headers/parseNMEA.h \
+		headers/position.h \
+		headers/types.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o parseNMEA.o src/parseNMEA.cpp
 
 ####### Install

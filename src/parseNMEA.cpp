@@ -22,7 +22,7 @@ GPS::Position GPS::extractPosition(const NMEAPair &)
     return GPS::Position(1, 1, 1);
 }
 
-std::vector<GPS::Position> routeFromNMEALog(const std::string & filepath)
+std::vector<GPS::Position> GPS::routeFromNMEALog(const std::string & filepath)
 {
     std::vector<GPS::Position> tempVect;
     
