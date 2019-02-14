@@ -15,10 +15,17 @@ bool GPS::isValidSentence(const std::string &s)
             if (s[endPos] == '*')
             {
                 std::string checksumChars = s.substr(1, endPos-1);
+                int checksum = checksumChars[0] ^ checksumChars[1];
+                for (int i = 1; i < checksumChars[checksumChars.length()-1]; i++)
+                {
+                    checksum = checksum ^ checksumChars[i+1];
+                }
+                if (std::to_string(checksum) == s.substr(s.size()-2,2))
+                {
+                    return true;
+                }
             }
         }
-
-
     }
 
     return false;
