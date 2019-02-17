@@ -42,14 +42,28 @@ bool GPS::isValidSentence(const std::string &s)
     return false;
 }
 
-GPS::NMEAPair GPS::decomposeSentence(const std::string & nmeaSentence)
+GPS::NMEAPair GPS::decomposeSentence(const std::string &nmeaSentence)
 {
-    std::vector<std::string> tempVect;
-    GPS::NMEAPair temp = {"Temp", tempVect};
+    std::vector<std::string> fields;
+    std::string type = nmeaSentence.substr(3,3);
+    nmeaSentence = nmeaSentence.substr(7, nmeaSentence.size()-10);
 
-    return temp;
+    std::string word;
+    std::stringstream stream(nmeaSentence);
+    while(std::getline(stream, word, ','))
+    {
+        fields.push_back(word);
+    }
+
+    GPS::NMEAPair result = {type, fields};
+
+    return result;
 }
 
+/* Computes a Position from a NMEAPair.
+ * For ill-formed or unsupported sentence types, throws a std::invalid_argument
+ * exception.
+ */
 GPS::Position GPS::extractPosition(const NMEAPair &)
 {
     return GPS::Position(1, 1, 1);
