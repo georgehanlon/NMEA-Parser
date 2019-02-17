@@ -1,5 +1,7 @@
 #include <vector>
 #include <string>
+#include <sstream>
+#include <algorithm>
 #include "parseNMEA.h"
 #include "position.h"
 #include "types.h"
@@ -16,11 +18,20 @@ bool GPS::isValidSentence(const std::string &s)
             {
                 std::string checksumChars = s.substr(1, endPos-1);
                 int checksum = checksumChars[0] ^ checksumChars[1];
-                for (int i = 1; i < checksumChars[checksumChars.length()-1]; i++)
+                for (int i = 1; i < checksumChars.length(); i++)
                 {
                     checksum = checksum ^ checksumChars[i+1];
                 }
-                if (std::to_string(checksum) == s.substr(s.size()-2,2))
+
+                std::string log_hex_checksum = s.substr(s.size()-2,2);
+
+                transform(log_hex_checksum.begin(), log_hex_checksum.end(), log_hex_checksum.begin(), ::tolower);
+
+                std::stringstream hexVal;
+                hexVal << std::hex << checksum;
+                std::string result (hexVal.str());
+
+                if (result == log_hex_checksum)
                 {
                     return true;
                 }
@@ -31,11 +42,11 @@ bool GPS::isValidSentence(const std::string &s)
     return false;
 }
 
-GPS::NMEAPair GPS::decomposeSentence(const std::string & nmeaSentence) 
+GPS::NMEAPair GPS::decomposeSentence(const std::string & nmeaSentence)
 {
     std::vector<std::string> tempVect;
     GPS::NMEAPair temp = {"Temp", tempVect};
-    
+
     return temp;
 }
 
@@ -47,6 +58,6 @@ GPS::Position GPS::extractPosition(const NMEAPair &)
 std::vector<GPS::Position> GPS::routeFromNMEALog(const std::string & filepath)
 {
     std::vector<GPS::Position> tempVect;
-    
+
     return tempVect;
 }
