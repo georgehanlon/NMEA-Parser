@@ -1,5 +1,3 @@
-#include <vector>
-#include <string>
 #include <sstream>
 #include <algorithm>
 #include "parseNMEA.h"
@@ -64,9 +62,33 @@ GPS::NMEAPair GPS::decomposeSentence(const std::string &nmeaSentence)
  * For ill-formed or unsupported sentence types, throws a std::invalid_argument
  * exception.
  */
-GPS::Position GPS::extractPosition(const NMEAPair &)
+GPS::Position GPS::extractPosition(const NMEAPair &p)
 {
-    return GPS::Position(1, 1, 1);
+    //Latitude: N/S, Longitude E/W, Elevation M, .first/.second
+    std::string lat, lon, ele;
+    ele = "0";
+    char northing, easting;
+
+    for (int i = 0; i < p.second.size(); i++)
+    {
+        if (p.second[i] == "N" || p.second[i] == "S")
+        {
+            northing = p.second[i];
+            lat = p.second[i-1];
+        }
+        if (p.second[i] == "E" || p.second[i] == "W")
+        {
+            easting = p.second[i];
+            lon = p.second[i-1];
+        }
+        if (p.second[i] == "M")
+        {
+            ele = p.second[i-1];
+            break;
+        }
+    }
+
+    return GPS::Position(lat, northing, lon, easting, ele);
 }
 
 std::vector<GPS::Position> GPS::routeFromNMEALog(const std::string & filepath)
