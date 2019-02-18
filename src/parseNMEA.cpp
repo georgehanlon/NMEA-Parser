@@ -1,5 +1,6 @@
 #include <sstream>
 #include <algorithm>
+#include <fstream>
 #include "parseNMEA.h"
 #include "position.h"
 #include "types.h"
@@ -58,16 +59,16 @@ GPS::NMEAPair GPS::decomposeSentence(const std::string &nmeaSentence)
     return result;
 }
 
-/* Computes a Position from a NMEAPair.
- * For ill-formed or unsupported sentence types, throws a std::invalid_argument
- * exception.
- */
 GPS::Position GPS::extractPosition(const NMEAPair &p)
 {
-    //Latitude: N/S, Longitude E/W, Elevation M, .first/.second
     std::string lat, lon, ele;
     ele = "0";
     char northing, easting;
+
+    if (p.second.size() < 5)
+    {
+        throw std::invalid_argument("Ill-formed or unsupported sentence types (less than 5 elements in sentence).")
+    }
 
     for (int i = 0; i < p.second.size(); i++)
     {
@@ -91,9 +92,19 @@ GPS::Position GPS::extractPosition(const NMEAPair &p)
     return GPS::Position(lat, northing, lon, easting, ele);
 }
 
-std::vector<GPS::Position> GPS::routeFromNMEALog(const std::string & filepath)
+std::vector<GPS::Position> GPS::routeFromNMEALog(const std::string &filepath)
 {
-    std::vector<GPS::Position> tempVect;
+    GPS::NMEAPair tempPair;
+    std::vector<GPS::Position> positionsVector;
+    std::ifstream sentenceFile(filepath);
+    for (std::string line; std::getline(sentenceFile, line))
+    {
+        if (GPS::isValidSentence(line) == true)
+        {
+            tempPair = GPS::decomposeSentence(line);
+            positionsVector.push_back(GPS::extractPosition(tempPair));
+        }
+    }
 
-    return tempVect;
+    return positionsVector;
 }
