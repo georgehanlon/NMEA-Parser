@@ -53,6 +53,12 @@ GPS::NMEAPair GPS::decomposeSentence(const std::string &nmeaSentence)
     {
         fields.push_back(word);
     }
+    int sentenceEndPos = sentenceContents.size();
+    std::string commacheck = sentenceContents.substr(sentenceEndPos-2, 2);
+    if (commacheck == ",,")
+    {
+        fields.push_back("");
+    }
 
     GPS::NMEAPair result = {type, fields};
 
