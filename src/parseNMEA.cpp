@@ -10,31 +10,27 @@ bool GPS::isValidSentence(const std::string &s)
 {
     if (s.substr(0,3) == "$GP")
     {
-        std::string type = s.substr(3,3);
-        if (type == "GLL" || type == "GGA" || type == "RMC")
+        int endPos = s.size()-3;
+        if (s[endPos] == '*')
         {
-            int endPos = s.size()-3;
-            if (s[endPos] == '*')
+            std::string checksumChars = s.substr(1, endPos-1);
+            int checksum = checksumChars[0] ^ checksumChars[1];
+            for (int i = 1; i < checksumChars.length(); i++)
             {
-                std::string checksumChars = s.substr(1, endPos-1);
-                int checksum = checksumChars[0] ^ checksumChars[1];
-                for (int i = 1; i < checksumChars.length(); i++)
-                {
-                    checksum = checksum ^ checksumChars[i+1];
-                }
+                checksum = checksum ^ checksumChars[i+1];
+            }
 
-                std::string log_hex_checksum = s.substr(s.size()-2,2);
+            std::string log_hex_checksum = s.substr(s.size()-2,2);
 
-                transform(log_hex_checksum.begin(), log_hex_checksum.end(), log_hex_checksum.begin(), ::tolower);
+            transform(log_hex_checksum.begin(), log_hex_checksum.end(), log_hex_checksum.begin(), ::tolower);
 
-                std::stringstream hexVal;
-                hexVal << std::hex << checksum;
-                std::string result (hexVal.str());
+            std::stringstream hexVal;
+            hexVal << std::hex << checksum;
+            std::string result (hexVal.str());
 
-                if (result == log_hex_checksum)
-                {
-                    return true;
-                }
+            if (result == log_hex_checksum)
+            {
+                return true;
             }
         }
     }
@@ -49,15 +45,12 @@ GPS::NMEAPair GPS::decomposeSentence(const std::string &nmeaSentence)
     std::string sentenceContents = nmeaSentence.substr(7, nmeaSentence.size()-10); //Making temporary variable as passed value is constant
     std::string word;
     std::stringstream stream(sentenceContents);
-    while(std::getline(stream, word, ','))
+
+    while (stream.good())
     {
-        fields.push_back(word);
-    }
-    int sentenceEndPos = sentenceContents.size();
-    std::string commacheck = sentenceContents.substr(sentenceEndPos-2, 2);
-    if (commacheck == ",,")
-    {
-        fields.push_back("");
+        std::string tempString;
+        std::getline(stream, tempString, ',');
+        fields.push_back(tempString);
     }
 
     GPS::NMEAPair result = {type, fields};
